@@ -34,7 +34,16 @@ string FTSIndexing::DropFTSIndexQuery(ClientContext &context, const FunctionPara
 		    qname.name);
 	}
 
-	return StringUtil::Format("DROP SCHEMA %s CASCADE;", fts_schema);
+	string input_table = qname.catalog == INVALID_CATALOG ? "" : StringUtil::Format("%s.", qname.catalog);
+	input_table += StringUtil::Format("%s.%s", qname.schema, qname.name);
+	return StringUtil::Format("DROP TRIGGER IF EXISTS %s_aaa_insert_docs ON %s; "
+	                          "DROP TRIGGER IF EXISTS %s_bbb_upsert_dict ON %s; "
+	                          "DROP TRIGGER IF EXISTS %s_ccc_insert_terms ON %s; "
+	                          "DROP TRIGGER IF EXISTS %s_ddd_update_doc_len ON %s; "
+	                          "DROP TRIGGER IF EXISTS %s_eee_update_stats ON %s; "
+	                          "DROP SCHEMA %s CASCADE;",
+	                          fts_schema, input_table, fts_schema, input_table, fts_schema, input_table, fts_schema,
+	                          input_table, fts_schema, input_table, fts_schema);
 }
 
 static string IndexingScript(ClientContext &context, QualifiedName &qname, const string &input_id,
@@ -42,6 +51,11 @@ static string IndexingScript(ClientContext &context, QualifiedName &qname, const
                              const string &ignore, bool strip_accents, bool lower) {
 	// clang-format off
     string result = R"(
+        DROP TRIGGER IF EXISTS %fts_schema%_aaa_insert_docs ON %input_table%;
+        DROP TRIGGER IF EXISTS %fts_schema%_bbb_upsert_dict ON %input_table%;
+        DROP TRIGGER IF EXISTS %fts_schema%_ccc_insert_terms ON %input_table%;
+        DROP TRIGGER IF EXISTS %fts_schema%_ddd_update_doc_len ON %input_table%;
+        DROP TRIGGER IF EXISTS %fts_schema%_eee_update_stats ON %input_table%;
         DROP SCHEMA IF EXISTS %fts_schema% CASCADE;
         CREATE SCHEMA %fts_schema%;
         CREATE TABLE %fts_schema%.stopwords (sw VARCHAR);
@@ -82,7 +96,8 @@ static string IndexingScript(ClientContext &context, QualifiedName &qname, const
 	result += R"(
         CREATE TABLE %fts_schema%.docs AS (
             SELECT rowid AS docid,
-                   "%input_id%" AS name
+                   "%input_id%" AS name,
+                   0 AS len
             FROM %input_table%
         );
 
@@ -107,7 +122,6 @@ static string IndexingScript(ClientContext &context, QualifiedName &qname, const
 	           ss.fieldid
         FROM stemmed_stopped AS ss;
 
-        ALTER TABLE %fts_schema%.docs ADD len BIGINT;
         UPDATE %fts_schema%.docs d
         SET len = (
             SELECT count(term)
@@ -115,14 +129,16 @@ static string IndexingScript(ClientContext &context, QualifiedName &qname, const
             WHERE t.docid = d.docid
         );
 
-        CREATE TABLE %fts_schema%.dict AS
+        CREATE TABLE %fts_schema%.dict (termid BIGINT, term VARCHAR UNIQUE, df BIGINT);
+        INSERT INTO %fts_schema%.dict
         WITH distinct_terms AS (
             SELECT DISTINCT term
             FROM %fts_schema%.terms
             ORDER BY docid, term
         )
         SELECT row_number() OVER () - 1 AS termid,
-               dt.term
+               dt.term,
+               0 AS df
         FROM distinct_terms AS dt;
 
         ALTER TABLE %fts_schema%.terms ADD termid BIGINT;
@@ -134,7 +150,6 @@ static string IndexingScript(ClientContext &context, QualifiedName &qname, const
         );
         ALTER TABLE %fts_schema%.terms DROP term;
 
-        ALTER TABLE %fts_schema%.dict ADD df BIGINT;
         UPDATE %fts_schema%.dict d
         SET df = (
             SELECT count(distinct docid)
@@ -143,11 +158,60 @@ static string IndexingScript(ClientContext &context, QualifiedName &qname, const
             GROUP BY termid
         );
 
+        CREATE SEQUENCE %fts_schema%.docid_seq;
+        CREATE SEQUENCE %fts_schema%.termid_seq;
+        SELECT nextval('%fts_schema%.docid_seq') FROM generate_series(1, (SELECT count(*) FROM %fts_schema%.docs) - 1);
+        SELECT nextval('%fts_schema%.termid_seq') FROM generate_series(1, (SELECT count(*) FROM %fts_schema%.dict) - 1);
+
         CREATE TABLE %fts_schema%.stats AS (
             SELECT COUNT(docs.docid) AS num_docs,
                    SUM(docs.len) / COUNT(docs.len) AS avgdl
             FROM %fts_schema%.docs AS docs
         );
+
+        CREATE TRIGGER %fts_schema%_aaa_insert_docs
+        AFTER INSERT ON %input_table%
+        REFERENCING NEW TABLE AS inserted_rows
+        FOR EACH STATEMENT
+        INSERT INTO %fts_schema%.docs (docid, name, len)
+        SELECT nextval('%fts_schema%.docid_seq'), "%input_id%", -1
+        FROM inserted_rows;
+
+        CREATE TRIGGER %fts_schema%_bbb_upsert_dict
+        AFTER INSERT ON %input_table%
+        FOR EACH STATEMENT
+        INSERT INTO %fts_schema%.dict (termid, term, df)
+        SELECT nextval('%fts_schema%.termid_seq'), tok.term, count(DISTINCT tok.docid)
+        FROM (
+            %trigger_tokenize_no_fieldid%
+        ) AS tok
+        GROUP BY tok.term
+        ON CONFLICT (term) DO UPDATE SET df = df + excluded.df;
+
+        CREATE TRIGGER %fts_schema%_ccc_insert_terms
+        AFTER INSERT ON %input_table%
+        FOR EACH STATEMENT
+        INSERT INTO %fts_schema%.terms (termid, docid, fieldid)
+        SELECT d.termid, tok.docid, tok.fieldid
+        FROM (
+            %trigger_tokenize_with_fieldid%
+        ) AS tok
+        JOIN %fts_schema%.dict d ON d.term = tok.term;
+
+        CREATE TRIGGER %fts_schema%_ddd_update_doc_len
+        AFTER INSERT ON %input_table%
+        FOR EACH STATEMENT
+        UPDATE %fts_schema%.docs d
+        SET len = (SELECT count(*) FROM %fts_schema%.terms t WHERE t.docid = d.docid)
+        WHERE d.len = -1;
+
+        CREATE TRIGGER %fts_schema%_eee_update_stats
+        AFTER INSERT ON %input_table%
+        FOR EACH STATEMENT
+        UPDATE %fts_schema%.stats
+        SET
+            num_docs = (SELECT count(*) FROM %fts_schema%.docs),
+            avgdl = (SELECT SUM(len) / COUNT(len) FROM %fts_schema%.docs);
 
         CREATE MACRO %fts_schema%.match_bm25(docname, query_string, fields := NULL, k := 1.2, b := 0.75, conjunctive := false) AS (
             WITH tokens AS (
@@ -221,15 +285,53 @@ static string IndexingScript(ClientContext &context, QualifiedName &qname, const
 	           (SELECT fieldid FROM %fts_schema%.fields WHERE field = '%input_value%') AS fieldid
         FROM %input_table% AS fts_ii
     )";
+	// trigger variant (no fieldid): tokenizes from source table for pending docs, used for dict upsert
+	string trigger_field_no_fieldid = R"(
+        SELECT stem(raw.w, '%stemmer%') AS term, raw.docid
+        FROM (
+            SELECT unnest(%fts_schema%.tokenize(fts_ii."%input_value%")) AS w, pd.docid
+            FROM %input_table% AS fts_ii
+            JOIN (SELECT docid, name FROM %fts_schema%.docs WHERE len = -1) pd ON pd.name = fts_ii."%input_id%"
+        ) AS raw
+        WHERE raw.w IS NOT NULL AND len(raw.w) > 0
+          AND raw.w NOT IN (SELECT sw FROM %fts_schema%.stopwords)
+    )";
+	// trigger variant (with fieldid): used for terms insert
+	string trigger_field_with_fieldid = R"(
+        SELECT stem(raw.w, '%stemmer%') AS term, raw.docid, raw.fieldid
+        FROM (
+            SELECT unnest(%fts_schema%.tokenize(fts_ii."%input_value%")) AS w,
+                   pd.docid,
+                   (SELECT fieldid FROM %fts_schema%.fields WHERE field = '%input_value%') AS fieldid
+            FROM %input_table% AS fts_ii
+            JOIN (SELECT docid, name FROM %fts_schema%.docs WHERE len = -1) pd ON pd.name = fts_ii."%input_id%"
+        ) AS raw
+        WHERE raw.w IS NOT NULL AND len(raw.w) > 0
+          AND raw.w NOT IN (SELECT sw FROM %fts_schema%.stopwords)
+    )";
 	// clang-format on
 	vector<string> field_values;
 	vector<string> tokenize_fields;
+	vector<string> trig_no_fieldid_fields;
+	vector<string> trig_with_fieldid_fields;
 	for (idx_t i = 0; i < input_values.size(); i++) {
 		field_values.push_back(StringUtil::Format("(%i, '%s')", i, input_values[i]));
 		tokenize_fields.push_back(StringUtil::Replace(tokenize_field_query, "%input_value%", input_values[i]));
+
+		auto f_no = StringUtil::Replace(trigger_field_no_fieldid, "%input_value%", input_values[i]);
+		f_no = StringUtil::Replace(f_no, "%input_id%", input_id);
+		trig_no_fieldid_fields.push_back(f_no);
+
+		auto f_with = StringUtil::Replace(trigger_field_with_fieldid, "%input_value%", input_values[i]);
+		f_with = StringUtil::Replace(f_with, "%input_id%", input_id);
+		trig_with_fieldid_fields.push_back(f_with);
 	}
 	result = StringUtil::Replace(result, "%field_values%", StringUtil::Join(field_values, ", "));
 	result = StringUtil::Replace(result, "%union_fields_query%", StringUtil::Join(tokenize_fields, " UNION ALL "));
+	result = StringUtil::Replace(result, "%trigger_tokenize_no_fieldid%",
+	                             StringUtil::Join(trig_no_fieldid_fields, " UNION ALL "));
+	result = StringUtil::Replace(result, "%trigger_tokenize_with_fieldid%",
+	                             StringUtil::Join(trig_with_fieldid_fields, " UNION ALL "));
 
 	string fts_schema = GetFTSSchema(qname);
 	string input_table = qname.catalog == INVALID_CATALOG ? "" : StringUtil::Format("%s.", qname.catalog);
