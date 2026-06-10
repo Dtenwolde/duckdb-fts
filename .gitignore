@@ -1,0 +1,4 @@
+.cache/
+.idea/
+build/
+duckdb_unittest_tempdir/
