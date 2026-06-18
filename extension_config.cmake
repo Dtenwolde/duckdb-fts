@@ -7,3 +7,4 @@ duckdb_extension_load(fts
     ${LOAD_FTS_TESTS}
     DONT_LINK
 )
+duckdb_extension_load(json)

@@ -2,4 +2,8 @@
 .idea/
 build/
 duckdb_unittest_tempdir/
-
+duckdb-eval.duckdb*
+!benchmark-results/
+benchmark-results/*
+!benchmark-results/README.md
+!benchmark-results/fts_update_benchmark_report.md
