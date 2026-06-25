@@ -10,6 +10,8 @@ benchmark-results/*
 !benchmark-results/README.md
 !benchmark-results/fts_update_benchmark_report.md
 !benchmark-results/delta_stats_pr_plan.md
+!benchmark-results/delta_dict_df_pr_plan.md
+!benchmark-results/repeated_tokenization_pr_plan.md
 !benchmark-results/plots/
 !benchmark-results/plots/*.svg
 !benchmark-results/plots/*.png
