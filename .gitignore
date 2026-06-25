@@ -1,5 +1,7 @@
 .cache/
 .idea/
+__pycache__/
+*.py[cod]
 build/
 duckdb_unittest_tempdir/
 duckdb-eval.duckdb*
@@ -7,3 +9,13 @@ duckdb-eval.duckdb*
 benchmark-results/*
 !benchmark-results/README.md
 !benchmark-results/fts_update_benchmark_report.md
+!benchmark-results/delta_stats_pr_plan.md
+!benchmark-results/plots/
+!benchmark-results/plots/*.svg
+!benchmark-results/plots/*.png
+!benchmark-results/plots/README.md
+!benchmark-results/trigger-profiles/
+!benchmark-results/trigger-profiles/*.csv
+!benchmark-results/trigger-profiles/README.md
+!benchmark-results/trigger-profiles/profiles/
+!benchmark-results/trigger-profiles/profiles/**/*.json

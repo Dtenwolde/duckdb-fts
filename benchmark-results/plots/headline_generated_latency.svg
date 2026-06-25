@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="640" viewBox="0 0 1180 640">
+<rect width="100%" height="100%" fill="white"/>
+<style>
+text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #1f2933; }
+.title { font-size: 24px; font-weight: 700; }
+.subtitle { font-size: 13px; fill: #52606d; }
+.axis { font-size: 12px; fill: #52606d; }
+.label { font-size: 13px; }
+.small { font-size: 11px; fill: #52606d; }
+.value { font-size: 12px; font-weight: 600; }
+.barlabel { font-size: 11px; fill: white; font-weight: 600; }
+</style>
+<text class="title" x="40" y="42">Generated Tenant Update Latency</text>
+<text class="subtitle" x="40" y="66">Median update freshness cost; x-axis is logarithmic seconds</text>
+<line x1="300" y1="570" x2="1040" y2="570" stroke="#d9dee7"/>
+<line x1="300.0" y1="564" x2="300.0" y2="576" stroke="#d9dee7"/>
+<text class="axis" x="300.0" y="592" text-anchor="middle">0.05s</text>
+<line x1="385.6" y1="564" x2="385.6" y2="576" stroke="#d9dee7"/>
+<text class="axis" x="385.6" y="592" text-anchor="middle">0.1s</text>
+<line x1="584.4" y1="564" x2="584.4" y2="576" stroke="#d9dee7"/>
+<text class="axis" x="584.4" y="592" text-anchor="middle">0.5s</text>
+<line x1="670.0" y1="564" x2="670.0" y2="576" stroke="#d9dee7"/>
+<text class="axis" x="670.0" y="592" text-anchor="middle">1s</text>
+<line x1="868.8" y1="564" x2="868.8" y2="576" stroke="#d9dee7"/>
+<text class="axis" x="868.8" y="592" text-anchor="middle">5s</text>
+<line x1="954.4" y1="564" x2="954.4" y2="576" stroke="#d9dee7"/>
+<text class="axis" x="954.4" y="592" text-anchor="middle">10s</text>
+<line x1="1040.0" y1="564" x2="1040.0" y2="576" stroke="#d9dee7"/>
+<text class="axis" x="1040.0" y="592" text-anchor="middle">20s</text>
+<rect x="870" y="30" width="18" height="12" fill="#b84a42"/><text class="axis" x="896" y="41">full rebuild</text>
+<rect x="990" y="30" width="18" height="12" fill="#227c67"/><text class="axis" x="1016" y="41">incremental</text>
+<text class="label" x="40" y="128">100K insert 1</text>
+<text class="small" x="40" y="148">66.2x speedup</text>
+<line x1="300" y1="112" x2="912.5" y2="112" stroke="#b84a42" stroke-width="18" stroke-linecap="round"/>
+<text class="value" x="922.5" y="116">7.13s</text>
+<line x1="300" y1="140" x2="394.7" y2="140" stroke="#227c67" stroke-width="18" stroke-linecap="round"/>
+<text class="value" x="404.7" y="144">0.108s</text>
+<text class="label" x="40" y="220">100K mixed 500+500</text>
+<text class="small" x="40" y="240">17.2x speedup</text>
+<line x1="300" y1="204" x2="910.8" y2="204" stroke="#b84a42" stroke-width="18" stroke-linecap="round"/>
+<text class="value" x="920.8" y="208">7.03s</text>
+<line x1="300" y1="232" x2="559.5" y2="232" stroke="#227c67" stroke-width="18" stroke-linecap="round"/>
+<text class="value" x="569.5" y="236">0.409s</text>
+<text class="label" x="40" y="312">500K insert 1</text>
+<text class="small" x="40" y="332">15.7x speedup</text>
+<line x1="300" y1="296" x2="981.2" y2="296" stroke="#b84a42" stroke-width="18" stroke-linecap="round"/>
+<text class="value" x="991.2" y="300">12.4s</text>
+<line x1="300" y1="324" x2="641.3" y2="324" stroke="#227c67" stroke-width="18" stroke-linecap="round"/>
+<text class="value" x="651.3" y="328">0.792s</text>
+<text class="label" x="40" y="404">500K delete 1</text>
+<text class="small" x="40" y="424">16.8x speedup</text>
+<line x1="300" y1="388" x2="980.3" y2="388" stroke="#b84a42" stroke-width="18" stroke-linecap="round"/>
+<text class="value" x="990.3" y="392">12.3s</text>
+<line x1="300" y1="416" x2="631.5" y2="416" stroke="#227c67" stroke-width="18" stroke-linecap="round"/>
+<text class="value" x="641.5" y="420">0.732s</text>
+<text class="label" x="40" y="496">500K mixed 500+500</text>
+<text class="small" x="40" y="516">6.3x speedup</text>
+<line x1="300" y1="480" x2="994.8" y2="480" stroke="#b84a42" stroke-width="18" stroke-linecap="round"/>
+<text class="value" x="1004.8" y="484">13.9s</text>
+<line x1="300" y1="508" x2="766.5" y2="508" stroke="#227c67" stroke-width="18" stroke-linecap="round"/>
+<text class="value" x="776.5" y="512">2.18s</text>
+</svg>

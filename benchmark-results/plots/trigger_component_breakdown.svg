@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="700" viewBox="0 0 1260 700">
+<rect width="100%" height="100%" fill="white"/>
+<style>
+text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #1f2933; }
+.title { font-size: 24px; font-weight: 700; }
+.subtitle { font-size: 13px; fill: #52606d; }
+.axis { font-size: 12px; fill: #52606d; }
+.label { font-size: 13px; }
+.small { font-size: 11px; fill: #52606d; }
+.value { font-size: 12px; font-weight: 600; }
+.barlabel { font-size: 11px; fill: white; font-weight: 600; }
+</style>
+<text class="title" x="40" y="42">Trigger Maintenance Component Breakdown</text>
+<text class="subtitle" x="40" y="66">Trigger-equivalent statement timings; bars show share of summed component time</text>
+<text class="label" x="40" y="90">100K insert 1</text>
+<text class="small" x="40" y="108">sum of components: 0.112s</text>
+<text class="small" x="40" y="128">insert: recompute dict df</text>
+<rect x="245" y="115" width="178.5" height="18" fill="#b84a42"/>
+<text class="value" x="431.5" y="129">0.077s (69%)</text>
+<text class="small" x="40" y="176">insert postings</text>
+<rect x="245" y="163" width="25.6" height="18" fill="#227c67"/>
+<text class="value" x="278.6" y="177">0.011s (10%)</text>
+<text class="small" x="40" y="224">insert docs + lengths</text>
+<rect x="245" y="211" width="24.0" height="18" fill="#b84a42"/>
+<text class="value" x="277.0" y="225">0.010s (9%)</text>
+<text class="small" x="40" y="272">insert new dict terms</text>
+<rect x="245" y="259" width="23.6" height="18" fill="#227c67"/>
+<text class="value" x="276.6" y="273">0.010s (9%)</text>
+<text class="small" x="40" y="320">insert: recompute stats</text>
+<rect x="245" y="307" width="8.2" height="18" fill="#227c67"/>
+<text class="value" x="261.2" y="321">0.004s (3%)</text>
+<text class="label" x="670" y="90">500K mixed 500+500</text>
+<text class="small" x="670" y="108">sum of components: 5.310s</text>
+<text class="small" x="670" y="128">insert docs + lengths</text>
+<rect x="875" y="115" width="210.4" height="18" fill="#b84a42"/>
+<text class="value" x="1093.4" y="129">4.297s (81%)</text>
+<text class="small" x="670" y="176">insert: recompute dict df</text>
+<rect x="875" y="163" width="22.7" height="18" fill="#b84a42"/>
+<text class="value" x="905.7" y="177">0.465s (9%)</text>
+<text class="small" x="670" y="224">delete: recompute dict df</text>
+<rect x="875" y="211" width="17.5" height="18" fill="#b84a42"/>
+<text class="value" x="900.5" y="225">0.357s (7%)</text>
+<text class="small" x="670" y="272">insert postings</text>
+<rect x="875" y="259" width="4.1" height="18" fill="#227c67"/>
+<text class="value" x="887.1" y="273">0.084s (2%)</text>
+<text class="small" x="670" y="320">insert new dict terms</text>
+<rect x="875" y="307" width="3.9" height="18" fill="#227c67"/>
+<text class="value" x="886.9" y="321">0.080s (2%)</text>
+<text class="small" x="670" y="368">delete docs</text>
+<rect x="875" y="355" width="2.0" height="18" fill="#7a9cc6"/>
+<text class="value" x="885.0" y="369">0.015s (0%)</text>
+<text class="small" x="670" y="416">delete postings</text>
+<rect x="875" y="403" width="2.0" height="18" fill="#7a9cc6"/>
+<text class="value" x="885.0" y="417">0.007s (0%)</text>
+<text class="small" x="670" y="464">insert: recompute stats</text>
+<rect x="875" y="451" width="2.0" height="18" fill="#227c67"/>
+<text class="value" x="885.0" y="465">0.002s (0%)</text>
+<text class="small" x="670" y="512">delete: recompute stats</text>
+<rect x="875" y="499" width="2.0" height="18" fill="#7a9cc6"/>
+<text class="value" x="885.0" y="513">0.002s (0%)</text>
+<text class="small" x="670" y="560">prune dict</text>
+<rect x="875" y="547" width="2.0" height="18" fill="#7a9cc6"/>
+<text class="value" x="885.0" y="561">0.001s (0%)</text>
+<rect x="40" y="650" width="14" height="10" fill="#b84a42"/><text class="axis" x="62" y="659">current likely optimization target</text>
+</svg>

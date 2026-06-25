@@ -122,7 +122,11 @@ class DuckDBProcess:
                     f"DuckDB exited while running SQL:\n{sql}\nOutput so far:\n{''.join(lines)}"
                 )
             stripped = line.strip()
-            if stripped.strip('"') == sentinel:
+            cleaned = stripped.strip('"')
+            if cleaned == sentinel or sentinel in cleaned:
+                before_sentinel = line.split(sentinel, 1)[0]
+                if before_sentinel.strip():
+                    lines.append(before_sentinel)
                 elapsed = time.perf_counter() - start if timed else None
                 errors = [x for x in lines if " Error:" in x or x.startswith("Error:")]
                 if errors:

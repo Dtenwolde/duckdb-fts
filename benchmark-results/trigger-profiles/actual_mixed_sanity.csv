@@ -1,0 +1,2 @@
+run_id,dataset,tenant,approach,operation,base_rows,batch_size,run_index,seconds,rows_changed,rows_per_sec,ms_per_row,db_file_size_bytes,duckdb_version
+20260625-102611,items.jsonl,account_900001,incremental,mixed,500000,500,1,3.2374785831198096,1000,308.88235221508273,3.2374785831198096,1473785856,v1.6.0-dev8471 (Development Version) f0515b5e68

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="520" viewBox="0 0 1120 520">
+<rect width="100%" height="100%" fill="white"/>
+<style>
+text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #1f2933; }
+.title { font-size: 24px; font-weight: 700; }
+.subtitle { font-size: 13px; fill: #52606d; }
+.axis { font-size: 12px; fill: #52606d; }
+.label { font-size: 13px; }
+.small { font-size: 11px; fill: #52606d; }
+.value { font-size: 12px; font-weight: 600; }
+.barlabel { font-size: 11px; fill: white; font-weight: 600; }
+</style>
+<text class="title" x="40" y="42">Where Trigger Update Time Is Going</text>
+<text class="subtitle" x="40" y="66">Grouped from trigger-equivalent component timings; highlights first optimization targets</text>
+<rect x="635" y="32" width="16" height="12" fill="#227c67"/><text class="axis" x="657" y="43">insert tokenization / length</text>
+<rect x="825" y="32" width="16" height="12" fill="#b84a42"/><text class="axis" x="847" y="43">dict df recompute</text>
+<rect x="975" y="32" width="16" height="12" fill="#8a94a6"/><text class="axis" x="997" y="43">other</text>
+<text class="label" x="40" y="158">100K insert 1</text>
+<text class="small" x="40" y="178">component sum 0.112s</text>
+<rect x="290.0" y="140" width="1.2" height="34" fill="#227c67"/>
+<rect x="291.2" y="140" width="9.0" height="34" fill="#b84a42"/>
+<rect x="300.2" y="140" width="2.9" height="34" fill="#8a94a6"/>
+<text class="value" x="311.1" y="162">0.11s</text>
+<text class="label" x="40" y="278">500K mixed 500+500</text>
+<text class="small" x="40" y="298">component sum 5.310s</text>
+<rect x="290.0" y="260" width="501.7" height="34" fill="#227c67"/>
+<text class="barlabel" x="540.8" y="282" text-anchor="middle">4.30s</text>
+<rect x="791.7" y="260" width="96.0" height="34" fill="#b84a42"/>
+<text class="barlabel" x="839.6" y="282" text-anchor="middle">0.82s</text>
+<rect x="887.6" y="260" width="22.4" height="34" fill="#8a94a6"/>
+<text class="value" x="918.0" y="282">5.31s</text>
+</svg>

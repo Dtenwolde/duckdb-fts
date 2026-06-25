@@ -1,0 +1,103 @@
+{
+    "io": {
+        "total_bytes_read": 0,
+        "total_bytes_written": 0
+    },
+    "operator": [
+        {
+            "extra_info": {},
+            "intermediate_rows": 0,
+            "intermediate_size_bytes": 0,
+            "timing": 0.000003417,
+            "type": "RESULT_COLLECTOR",
+            "children": [
+                {
+                    "extra_info": {
+                        "Projections": "'__FTS_BENCH_DONE_33_17b8b6ff7623453f8d1c930631886761__'",
+                        "Estimated Cardinality": "1"
+                    },
+                    "intermediate_rows": 1,
+                    "intermediate_size_bytes": 4112,
+                    "timing": 0.000001583,
+                    "type": "PROJECTION",
+                    "children": [
+                        {
+                            "extra_info": {},
+                            "intermediate_rows": 1,
+                            "intermediate_size_bytes": 4,
+                            "timing": 2.09e-7,
+                            "type": "DUMMY_SCAN"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "optimizer": {
+        "aggregate_function_rewriter": 0.000004,
+        "build_side_probe_side": 3.75e-7,
+        "column_lifetime": 4.58e-7,
+        "common_aggregate": 1.25e-7,
+        "common_subexpressions": 5.83e-7,
+        "common_subplan": 0.00000375,
+        "cte_filter_pusher": 1.25e-7,
+        "cte_inlining": 1.25e-7,
+        "deliminator": 1.25e-7,
+        "duplicate_groups": 1.67e-7,
+        "empty_result_pullup": 2.08e-7,
+        "expression_rewriter": 0.000001416,
+        "filter_pullup": 3.34e-7,
+        "filter_pushdown": 0.000001125,
+        "in_clause": 2.09e-7,
+        "join_elimination": 3.75e-7,
+        "join_filter_pushdown": 1.66e-7,
+        "join_order": 0.0000055,
+        "late_materialization": 3.34e-7,
+        "limit_pushdown": 8.3e-8,
+        "outer_join_simplification": 2.5e-7,
+        "partial_aggregate_pushdown": 1.67e-7,
+        "partitioned_execution": 2.08e-7,
+        "projection_pullup": 0.000001125,
+        "regex_range": 3.33e-7,
+        "reorder_filter": 1.67e-7,
+        "row_group_pruner": 8.3e-8,
+        "row_number_rewriter": 1.67e-7,
+        "sampling_pushdown": 1.67e-7,
+        "statistics_propagation": 0.000002875,
+        "top_n": 1.25e-7,
+        "top_n_window_elimination": 7.91e-7,
+        "total_time": 0.000051083,
+        "unnest_rewriter": 1.67e-7,
+        "unused_columns": 6.25e-7,
+        "window_self_join": 1.66e-7
+    },
+    "parser": {
+        "total_time": 0.000123625
+    },
+    "physical_planner": {
+        "column_binding": 3.75e-7,
+        "create_plan": 0.000001958,
+        "resolve_types": 8.3e-8,
+        "total_time": 0.000003458
+    },
+    "planner": {
+        "binding_time": 0.000014125,
+        "total_time": 0.000031125
+    },
+    "query": {
+        "cpu_time": 0.000005209,
+        "sql": "SELECT '__FTS_BENCH_DONE_33_17b8b6ff7623453f8d1c930631886761__';",
+        "total_intermediate_rows": 2,
+        "total_intermediate_size_bytes": 4116,
+        "total_row_groups_scanned": 0,
+        "total_row_groups_to_scan": 0,
+        "total_rows_scanned": 0,
+        "total_time": 0.000297875
+    },
+    "system": {
+        "blocked_thread_time": 0.0,
+        "peak_buffer_memory": 1343389232,
+        "peak_temp_dir_size": 0,
+        "total_memory_allocated": 0
+    }
+}
